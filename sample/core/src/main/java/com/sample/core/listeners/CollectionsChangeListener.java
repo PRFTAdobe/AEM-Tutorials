@@ -17,7 +17,7 @@ import org.apache.sling.api.resource.ResourceResolverFactory;
 import org.apache.sling.engine.SlingRequestProcessor;
 import org.apache.sling.jcr.api.SlingRepository;
 import org.apache.sling.models.annotations.Source;
-import com.sample.core.configs.CollectionsListenerConfig;
+import com.sample.core.osgiconfigs.CollectionsListenerConfig;
 import org.osgi.service.component.annotations.Activate;
 import org.osgi.service.component.annotations.Component;
 import org.osgi.service.component.annotations.Deactivate;
