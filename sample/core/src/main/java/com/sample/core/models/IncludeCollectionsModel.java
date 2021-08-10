@@ -1,6 +1,7 @@
 package com.sample.core.models;
 
 import com.day.cq.commons.jcr.JcrConstants;
+import java.util.Set;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,17 +25,23 @@ import org.apache.sling.models.annotations.Source;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
 import org.apache.sling.models.annotations.injectorspecific.OSGiService;
+import org.apache.sling.settings.SlingSettingsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.day.cq.replication.Replicator;
 import com.day.cq.replication.ReplicationActionType;
 import com.day.cq.replication.ReplicationException;
+import com.day.cq.commons.Externalizer;
 
 @Model(adaptables = { Resource.class }, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
 public class IncludeCollectionsModel {
 
 	private static final String LOG_PREFIX = "SAMPLE Project:";
 	private final Logger log = LoggerFactory.getLogger(getClass());
+	
+	@OSGiService
+	private Replicator replicator;
+	
 	@ValueMapValue
 	private String resourcePath;
 	
@@ -48,9 +55,9 @@ public class IncludeCollectionsModel {
 	@Source("sling-object")
 	private ResourceResolver resourceResolver;
 	
-	@OSGiService
-	private Replicator replicator;
-	
+	@Inject
+	SlingSettingsService slingSettingsService;
+		
 	//Determine the type of path suffix to use when obtaining JCR node properties.
 	private String getPathSuffix() {
 		 String suffix = "";
@@ -126,7 +133,7 @@ public class IncludeCollectionsModel {
 					    	       		if (contentType.equals("text-fragments")) {
                                        					//Obtain the current fragment's property which contains the text content.
 					    	    	  		String txtVal = resNode.getProperty("text-content").getValue().toString();							    	 
-					    	    	  		currentResource.put("_"+name + " ",txtVal);					    	    	   
+					    	    	  		currentResource.put("_"+fragName,txtVal);					    	    	   
 					    	       		} else if (contentType.equals("svg-icons" )) {
 					    	    		   	String mimeType = resNode.getProperty(JcrConstants.JCR_MIMETYPE).getValue().toString();					    	    	   
 						    	    	   	//Get the SVG markup if the mimetype indicates the current node is an SVG image.
@@ -135,11 +142,11 @@ public class IncludeCollectionsModel {
 								    	           Binary binary =  iconBin.getBinary();
 								    	           InputStream binStream = binary.getStream();	
 								    	           String iconVal = getDAMJcrData(binStream);							    	        
-								    	           currentResource.put("_"+name + " ",iconVal);
+								    	           currentResource.put("_"+name,iconVal);
 						    	    		}						    	    	
 							       } else {
                                        					//If the current node isn't a content fragment or SVG, return it's resource path.
-					    	    	   		currentResource.put("_"+name + " ",paths[i].toString());
+					    	    	   		currentResource.put("_"+name,paths[i].toString());
 					    	       		}
 					    	       
 					    	    	}
@@ -148,11 +155,36 @@ public class IncludeCollectionsModel {
 				    
 			 }
 			
-		    resourceResolver.commit();  
+		    resourceResolver.commit();
+		    //Replicate the collection if this is run on an Author, so the same collection and page updates apply in the publisher(s).
+		    if (checkIfAuthor()) {
+		    	replicateContent(resPath);
+		    }
 			
 		} catch(Exception e) {
 			log.error("{} Include Collections Model cannot obtain collection data.", LOG_PREFIX);
 			log.error(e.getMessage(), e);
 		}
+	}
+	
+	
+	private boolean checkIfAuthor() {
+	    Set<String> modes = slingSettingsService.getRunModes();
+	    if (modes.contains(Externalizer.AUTHOR)) {
+	    	return true;
+	    } else {
+	    	return false;
+	    }
+	}
+	
+	
+	public void replicateContent(String path) {	
+			try {
+				Session session = resourceResolver.adaptTo(Session.class);
+				replicator.replicate(session, ReplicationActionType.ACTIVATE, path);
+				log.info("{} Collections have been replicated.", LOG_PREFIX);
+			} catch (ReplicationException e) {
+				log.error(e.getMessage(), e);
+			}
 	}
 }
