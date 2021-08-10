@@ -13,6 +13,7 @@ import javax.jcr.Property;
 import javax.jcr.PropertyIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Value;
+import javax.jcr.Session;
 
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -22,8 +23,12 @@ import org.apache.sling.models.annotations.Model;
 import org.apache.sling.models.annotations.Source;
 import org.apache.sling.models.annotations.injectorspecific.Self;
 import org.apache.sling.models.annotations.injectorspecific.ValueMapValue;
+import org.apache.sling.models.annotations.injectorspecific.OSGiService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.day.cq.replication.Replicator;
+import com.day.cq.replication.ReplicationActionType;
+import com.day.cq.replication.ReplicationException;
 
 @Model(adaptables = { Resource.class }, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
 public class IncludeCollectionsModel {
@@ -43,6 +48,8 @@ public class IncludeCollectionsModel {
 	@Source("sling-object")
 	private ResourceResolver resourceResolver;
 	
+	@OSGiService
+	private Replicator replicator;
 	
 	//Determine the type of path suffix to use when obtaining JCR node properties.
 	private String getPathSuffix() {
@@ -103,12 +110,18 @@ public class IncludeCollectionsModel {
 					    	       		nameNode = nameRes.adaptTo(Node.class); 
 				    	    	   		resNode = contentRes.adaptTo(Node.class); 
 				    	    	   		String name = nameNode.getName(); 
+								
+								//This is needed for fragment names as they usually don't include an extension
+				    	    	   		String fragName = nameNode.getName(); 
 
 				    	    	   		//Remove the extension and period from the node name, to avoid property namespacing issues.
 				    	    	  		name = name.substring(0, name.length() - 4);
 				    	    	  		if (name.substring(name.length() - 1).equals(".")) {
 				    	    		   		name = name.substring(0, name.length() - 1);
 				    	    	   		}
+								
+								name = name.replaceAll("[^a-zA-Z0-9]", "");
+				    	    	                fragName = fragName.replaceAll("[^a-zA-Z0-9]", "");
 				    	    	   				    	    	   
 					    	       		if (contentType.equals("text-fragments")) {
                                        					//Obtain the current fragment's property which contains the text content.
