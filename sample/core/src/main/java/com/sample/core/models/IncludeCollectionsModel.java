@@ -32,6 +32,8 @@ import com.day.cq.replication.Replicator;
 import com.day.cq.replication.ReplicationActionType;
 import com.day.cq.replication.ReplicationException;
 import com.day.cq.commons.Externalizer;
+import com.day.cq.wcm.api.Page;
+import com.day.cq.wcm.api.PageManager;
 
 @Model(adaptables = { Resource.class }, defaultInjectionStrategy = DefaultInjectionStrategy.OPTIONAL)
 public class IncludeCollectionsModel {
@@ -156,9 +158,11 @@ public class IncludeCollectionsModel {
 			 }
 			
 		    resourceResolver.commit();
-		    //Replicate the collection if this is run on an Author, so the same collection and page updates apply in the publisher(s).
+		    //Replicate the page if this is run on an Author, so the same JSON updates are accessible from the publisher(s).
+		    PageManager pageManager= resource.getResourceResolver().adaptTo(PageManager.class);
+		    Page currentPage = pageManager.getContainingPage(resource);		    
 		    if (checkIfAuthor()) {
-		    	replicateContent(resPath);
+		    	replicateContent(currentPage.getPath());
 		    }
 			
 		} catch(Exception e) {
