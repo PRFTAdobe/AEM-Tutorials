@@ -49,7 +49,7 @@ public class CollectionsChangeListener implements EventListener {
 	private Session session;
 		
 	@Activate
-	protected  void activate(final DAMCollectionsListenerConfig config) {
+	protected  void activate(final CollectionsListenerConfig config) {
 		log.debug("{} DAM Collections Listener Activate: Start.", LOG_PREFIX);
 		try {
 			 pages = config.pagesToUpdate();
