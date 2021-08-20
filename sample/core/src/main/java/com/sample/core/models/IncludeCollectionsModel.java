@@ -161,7 +161,7 @@ public class IncludeCollectionsModel {
 		    //Replicate the page if this is run on an Author, so the same JSON updates are accessible from the publisher(s).
 		    PageManager pageManager= resource.getResourceResolver().adaptTo(PageManager.class);
 		    Page currentPage = pageManager.getContainingPage(resource);		    
-		    if (checkIfAuthor()) {
+		    if (checkIfAuthor() && currentPage != null) {
 		    	replicateContent(currentPage.getPath());
 		    }
 			
