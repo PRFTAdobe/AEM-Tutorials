@@ -18,6 +18,7 @@ import javax.jcr.Session;
 
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
+import org.apache.sling.api.resource.ModifiableValueMap;
 
 import org.apache.sling.models.annotations.DefaultInjectionStrategy;
 import org.apache.sling.models.annotations.Model;
@@ -143,7 +144,7 @@ public class IncludeCollectionsModel {
 								    	    	   Property iconBin = resNode.getProperty(JcrConstants.JCR_DATA);
 								    	           Binary binary =  iconBin.getBinary();
 								    	           InputStream binStream = binary.getStream();	
-								    	           String iconVal = getDAMJcrData(binStream);							    	        
+								    	           String iconVal = getJcrData(binStream);							    	        
 								    	           currentResource.put("_"+name,iconVal);
 						    	    		}						    	    	
 							       } else {
