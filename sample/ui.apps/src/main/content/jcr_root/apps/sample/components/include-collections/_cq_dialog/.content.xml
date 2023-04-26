@@ -38,7 +38,7 @@
                     <resourcePath
                         jcr:primaryType="nt:unstructured"
                         sling:resourceType="granite/ui/components/coral/foundation/form/pathfield"
-                        fieldLabel=”Provide the repository path to the collection:”
+                        fieldLabel="Provide the repository path to the collection:"
                         name="./resourcePath"
                         required="{Boolean}true"/>
                 </items>
