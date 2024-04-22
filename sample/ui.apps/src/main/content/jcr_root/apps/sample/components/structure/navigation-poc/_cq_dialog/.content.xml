@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jcr:root xmlns:sling="http://sling.apache.org/jcr/sling/1.0"
+    xmlns:jcr="http://www.jcp.org/jcr/1.0"
+    xmlns:cq="http://www.day.com/jcr/cq/1.0"
+    xmlns:granite="http://www.adobe.com/jcr/granite/1.0"
+    jcr:primaryType="nt:unstructured"
+    jcr:title="Navigation Component PoC"
+    sling:resourceType="cq/gui/components/authoring/dialog"
+    extraClientlibs="[nav.authoring]">
+    <content
+        jcr:primaryType="nt:unstructured"
+        sling:resourceType="granite/ui/components/coral/foundation/container"
+        granite:class="navigation-poc-dialog">
+        <items jcr:primaryType="nt:unstructured">
+            <brandLogo
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/form/pathbrowser"
+                fieldLabel="Brand Logo"
+                rootPath="/content/dam"
+                name="./brandLogo"
+                required="{Boolean}false"
+            />
+            <homePageLink
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/form/pathbrowser"
+                fieldLabel="Home Page Link"
+                rootPath="/content"
+                name="./homePageLink"
+                required="{Boolean}true"
+                />
+            <homePageText
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/form/textfield"
+                fieldLabel="Home Page Text"
+                name="./homePageText"
+                />
+            <startPath
+                jcr:primaryType="nt:unstructured"
+                sling:resourceType="granite/ui/components/coral/foundation/form/pathbrowser"
+                fieldLabel="Starting page path"
+                name="./startPath"
+                rootPath="/content"
+                required="{Boolean}true"
+                />    
+        </items>
+    </content>
+</jcr:root>
