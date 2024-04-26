@@ -1,7 +1,8 @@
 package com.sample.core.services;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.JsonNodeFactory;
+import com.fasterxml.jackson.databind.node.ObjectNode;
 import com.sample.core.pojos.NavigationItem;
 
 import java.util.ArrayList;
@@ -77,9 +78,11 @@ public class NavigationServiceImpl implements NavigationService {
     }
 
     @Override
-    public JsonArray getNavigationAsJson(SlingHttpServletRequest request, String startPath) {
+    public ArrayNode getNavigationAsJson(SlingHttpServletRequest request, String startPath) {
         try {
-            JsonArray navigationArray = new JsonArray();
+           // JsonArray navigationArray = new JsonArray();
+            ArrayNode navigationArray = JsonNodeFactory.instance.arrayNode();
+
             resourceResolver = request.getResourceResolver();
             Resource startResource = resourceResolver.getResource(startPath);
             if (startResource != null) {
@@ -96,12 +99,12 @@ public class NavigationServiceImpl implements NavigationService {
                             e.printStackTrace();
                         }
                         
-                    JsonObject navigationItem = new JsonObject();
+                    ObjectNode navigationItem = JsonNodeFactory.instance.objectNode();;
                     
                     if (!child.getName().equals(jcrContent)) {
-                        navigationItem.addProperty("title", pageTitle);
-                        navigationItem.addProperty("name", child.getName());
-                        navigationItem.addProperty("path", child.getPath());
+                        navigationItem.put("title", pageTitle);
+                        navigationItem.put("name", child.getName());
+                        navigationItem.put("path", child.getPath());
                         navigationArray.add(navigationItem);
                     }
                 }

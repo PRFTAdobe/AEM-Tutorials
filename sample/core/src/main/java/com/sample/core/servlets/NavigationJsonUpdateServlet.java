@@ -1,6 +1,6 @@
 package com.sample.core.servlets;
 
-import com.google.gson.JsonArray;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import org.apache.sling.api.resource.ModifiableValueMap;
 import org.apache.sling.api.resource.Resource;
 import org.apache.sling.api.resource.ResourceResolver;
@@ -42,7 +42,7 @@ public class NavigationJsonUpdateServlet extends SlingAllMethodsServlet {
             brandLogo = request.getParameter("brandLogo");
         }
         String startPath = request.getParameter("startPath");
-        JsonArray navigationJsonArray =  NavigationService.getNavigationAsJson(request, startPath);
+        ArrayNode navigationJsonArray =  NavigationService.getNavigationAsJson(request, startPath);
 
         ResourceResolver resourceResolver = request.getResourceResolver();
         String navFragmentPath = "/content/dam/perficientpocs/navigation-fragment-demo/jcr:content/data/master";
