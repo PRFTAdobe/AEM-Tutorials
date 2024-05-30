@@ -84,6 +84,8 @@ public class NavigationServiceImpl implements NavigationService {
             ArrayNode navigationArray = JsonNodeFactory.instance.arrayNode();
 
             resourceResolver = request.getResourceResolver();
+            String reqURL = request.getScheme() + "://" + request.getServerName() + ":" + request.getServerPort();
+            String extension = ".html";
             Resource startResource = resourceResolver.getResource(startPath);
             if (startResource != null) {
                 for (Resource child : startResource.getChildren()) {
@@ -104,7 +106,7 @@ public class NavigationServiceImpl implements NavigationService {
                     if (!child.getName().equals(jcrContent)) {
                         navigationItem.put("title", pageTitle);
                         navigationItem.put("name", child.getName());
-                        navigationItem.put("path", child.getPath());
+                        navigationItem.put("path", reqURL + child.getPath() + extension);
                         navigationArray.add(navigationItem);
                     }
                 }
